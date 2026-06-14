@@ -1,0 +1,79 @@
+{
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
+  "files": {
+    "ignoreUnknown": true,
+    "includes": ["**", "!**/*.svg"]
+  },
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
+  },
+  "formatter": {
+    "enabled": true,
+    "useEditorconfig": true
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "preset": "recommended",
+      "complexity": {
+        "noForEach": "error",
+        "noVoid": "error"
+      },
+      "correctness": {
+        "noUnusedImports": { "fix": "safe", "level": "error" },
+        "noUnusedFunctionParameters": "error",
+        "noUnusedVariables": "error"
+      },
+      "style": {
+        "noEnum": "error",
+        "noNestedTernary": "error",
+        "noNonNullAssertion": "error",
+        "useAtIndex": "error",
+        "useCollapsedIf": "error",
+        "useFilenamingConvention": {
+          "level": "error",
+          "options": {
+            "filenameCases": ["kebab-case", "PascalCase"]
+          }
+        },
+        "useForOf": "error",
+        "useImportType": {
+          "level": "error",
+          "options": { "style": "separatedType" }
+        },
+        "useThrowOnlyError": "error"
+      },
+      "suspicious": {
+        "noExplicitAny": "error",
+        "noVar": "error"
+      }
+    }
+  },
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
+    }
+  },
+  "html": {
+    "experimentalFullSupportEnabled": true,
+    "formatter": {
+      "enabled": true,
+      "whitespaceSensitivity": "strict"
+    }
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "single",
+      "semicolons": "asNeeded"
+    }
+  }
+}
