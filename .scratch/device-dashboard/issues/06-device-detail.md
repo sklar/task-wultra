@@ -27,15 +27,15 @@ reached by clicking a devices-list row.
 
 ## Acceptance criteria
 
-- [ ] `devices/{id}.json` is fetched via Query; loading shows a skeleton; failure shows error +
+- [x] `devices/{id}.json` is fetched via Query; loading shows a skeleton; failure shows error +
       Retry; an unknown id (404) shows a not-found state.
-- [ ] The info panel is grouped Identity / Software / Lifecycle / User; status is an
+- [x] The info panel is grouped Identity / Software / Lifecycle / User; status is an
       authoritative badge; the user name is plain text.
-- [ ] The event history table renders all events newest-first with type/timestamp/result/
+- [x] The event history table renders all events newest-first with type/timestamp/result/
       location/ip and the muted audit-log note.
-- [ ] Type and result filters are single-select, held in local state, and narrow the event rows.
-- [ ] The document title becomes `{model} ({shortId}) · …` once data resolves.
-- [ ] Integration: success renders info + events; 404 → not-found; a type/result filter is
+- [x] Type and result filters are single-select, held in local state, and narrow the event rows.
+- [x] The document title becomes `{model} ({shortId}) · …` once data resolves.
+- [x] Integration: success renders info + events; 404 → not-found; a type/result filter is
       reflected in the rows.
 
 ## Blocked by

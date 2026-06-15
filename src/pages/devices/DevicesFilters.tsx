@@ -64,7 +64,7 @@ export function DevicesFilters({
 					value={search}
 					onChange={(e) => onSearchChange(e.target.value)}
 					placeholder="shortId, model, or user"
-					className="rounded-sm border border-border bg-surface-2 px-3 py-1.5 text-sm text-text"
+					className="rounded-sm border border-border bg-surface-2 w-50 px-3 py-1.5 text-sm text-text"
 				/>
 			</div>
 			{hasActiveFilters && (

@@ -24,6 +24,65 @@ export type Device = {
 	user: DeviceUser
 }
 
+// An Event's outcome (CONTEXT.md): exactly success or rejected, colour-coded in the UI.
+export type EventResult = 'success' | 'rejected'
+
+// One Event in a device's history (CONTEXT.md). Rendered verbatim as a display-only
+// audit log (ADR-0001) — never used to derive status/activity.
+export type DeviceEvent = {
+	id: string
+	type: string
+	timestamp: string
+	ip: string
+	location: string
+	result: EventResult
+}
+
+// The detail document (`devices/{id}.json`): everything a list item carries plus the
+// software fields and the full Event history. The owning User is still just a label.
+export type DeviceDetail = Device & {
+	osVersion: string
+	appVersion: string
+	biometryEnabled: boolean
+	events: DeviceEvent[]
+}
+
+// Single Query entry per device id. The detail page reads this; the URL only carries
+// the UUID `id`, so the dynamic document title is derived from the resolved data.
+export function deviceDetailQueryOptions(id: string) {
+	return queryOptions({
+		queryKey: ['device', id],
+		queryFn: () => fetchJson<DeviceDetail>(`devices/${id}.json`),
+	})
+}
+
+// Pure sort — the unit-tested seam. Renders the audit log newest-first (CONTEXT.md);
+// timestamps are ISO, so they sort lexicographically in chronological order. Returns a
+// new array (the source is never reordered).
+export function sortEventsNewestFirst(events: DeviceEvent[]): DeviceEvent[] {
+	return [...events].sort((a, b) => b.timestamp.localeCompare(a.timestamp))
+}
+
+// The Event-history filters: `type` and `result`, each single-select and held in local
+// component state (PAGES.md) — a transient in-page refinement, not URL state.
+export type EventFilter = {
+	type?: string
+	result?: EventResult
+}
+
+// Pure filter predicate — the unit-tested seam. Applies the two single-select facets
+// (AND-combined); an absent facet is "no constraint".
+export function filterEvents(
+	events: DeviceEvent[],
+	filter: EventFilter,
+): DeviceEvent[] {
+	return events.filter((e) => {
+		if (filter.type && e.type !== filter.type) return false
+		if (filter.result && e.result !== filter.result) return false
+		return true
+	})
+}
+
 // The full collection document: the entire 120-item set in one response (ADR-0002).
 // `totalItems` etc. describe the unused server-side paginated view.
 export type DevicesResponse = {

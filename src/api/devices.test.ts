@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest'
-import type { Device } from './devices'
-import { filterDevices, paginate, sortDevices } from './devices'
+import type { Device, DeviceEvent } from './devices'
+import {
+	filterDevices,
+	filterEvents,
+	paginate,
+	sortDevices,
+	sortEventsNewestFirst,
+} from './devices'
 
 function device(overrides: Partial<Device> = {}): Device {
 	return {
@@ -89,6 +95,66 @@ describe('sortDevices', () => {
 		const devices = [a, b, c]
 		sortDevices(devices, { field: 'lastActiveAt', direction: 'asc' })
 		expect(devices.map((d) => d.id)).toEqual(['a', 'b', 'c'])
+	})
+})
+
+function event(overrides: Partial<DeviceEvent> = {}): DeviceEvent {
+	return {
+		id: 'e-1',
+		type: 'login',
+		timestamp: '2025-11-10T09:03:00Z',
+		ip: '25.206.173.205',
+		location: 'Brno, CZ',
+		result: 'success',
+		...overrides,
+	}
+}
+
+describe('sortEventsNewestFirst', () => {
+	it('orders events by timestamp, newest first, regardless of input order', () => {
+		const oldest = event({ id: 'a', timestamp: '2025-03-15T10:00:00Z' })
+		const middle = event({ id: 'b', timestamp: '2025-09-16T19:15:00Z' })
+		const newest = event({ id: 'c', timestamp: '2026-03-13T06:03:00Z' })
+
+		const result = sortEventsNewestFirst([oldest, newest, middle])
+
+		expect(result.map((e) => e.id)).toEqual(['c', 'b', 'a'])
+	})
+
+	it('does not mutate the input array', () => {
+		const events = [
+			event({ id: 'a', timestamp: '2025-03-15T10:00:00Z' }),
+			event({ id: 'b', timestamp: '2026-03-13T06:03:00Z' }),
+		]
+		sortEventsNewestFirst(events)
+		expect(events.map((e) => e.id)).toEqual(['a', 'b'])
+	})
+})
+
+describe('filterEvents', () => {
+	const events = [
+		event({ id: 'a', type: 'login', result: 'success' }),
+		event({ id: 'b', type: 'push_rejected', result: 'rejected' }),
+		event({ id: 'c', type: 'login', result: 'rejected' }),
+	]
+
+	it('returns every event when no filter is applied', () => {
+		expect(filterEvents(events, {}).map((e) => e.id)).toEqual(['a', 'b', 'c'])
+	})
+
+	it('narrows by type and by result (single-select, AND-combined)', () => {
+		expect(filterEvents(events, { type: 'login' }).map((e) => e.id)).toEqual([
+			'a',
+			'c',
+		])
+		expect(
+			filterEvents(events, { result: 'rejected' }).map((e) => e.id),
+		).toEqual(['b', 'c'])
+		expect(
+			filterEvents(events, { type: 'login', result: 'rejected' }).map(
+				(e) => e.id,
+			),
+		).toEqual(['c'])
 	})
 })
 
