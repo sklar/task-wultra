@@ -1,20 +1,28 @@
 import type { ReactNode } from 'react'
 import { createContext, useContext, useEffect, useRef, useState } from 'react'
+import type { TimestampFormat } from '../lib/timestamp'
 import type { ThemePreference } from './theme'
 import { resolveTheme } from './theme'
 
 const STORAGE_KEY = 'wultra.theme'
+const TIMESTAMP_FORMAT_KEY = 'wultra.timestampFormat'
 const DARK_QUERY = '(prefers-color-scheme: dark)'
 
 type PreferencesContextValue = {
 	theme: ThemePreference
 	setTheme: (theme: ThemePreference) => void
+	timestampFormat: TimestampFormat
+	setTimestampFormat: (format: TimestampFormat) => void
 }
 
 const PreferencesContext = createContext<PreferencesContextValue | null>(null)
 
 function isThemePreference(value: unknown): value is ThemePreference {
 	return value === 'dark' || value === 'light' || value === 'system'
+}
+
+function isTimestampFormat(value: unknown): value is TimestampFormat {
+	return value === 'absolute' || value === 'relative'
 }
 
 // localStorage is the home of truth (ADR-0003); read the persisted choice on init,
@@ -29,6 +37,16 @@ function readStoredTheme(): ThemePreference {
 	}
 }
 
+// Timestamp format default is `absolute` (PAGES.md / Settings).
+function readStoredTimestampFormat(): TimestampFormat {
+	try {
+		const stored = localStorage.getItem(TIMESTAMP_FORMAT_KEY)
+		return isTimestampFormat(stored) ? stored : 'absolute'
+	} catch {
+		return 'absolute'
+	}
+}
+
 function applyTheme(theme: ThemePreference): void {
 	const prefersDark = window.matchMedia(DARK_QUERY).matches
 	const effective = resolveTheme(theme, prefersDark)
@@ -39,6 +57,9 @@ function applyTheme(theme: ThemePreference): void {
 
 export function PreferencesProvider({ children }: { children: ReactNode }) {
 	const [theme, setThemeState] = useState<ThemePreference>(readStoredTheme)
+	const [timestampFormat, setTimestampFormatState] = useState<TimestampFormat>(
+		readStoredTimestampFormat,
+	)
 	const themeRef = useRef(theme)
 	themeRef.current = theme
 
@@ -69,8 +90,19 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
 		setThemeState(next)
 	}
 
+	const setTimestampFormat = (next: TimestampFormat) => {
+		try {
+			localStorage.setItem(TIMESTAMP_FORMAT_KEY, next)
+		} catch {
+			// Persisting is best-effort; ignore storage failures and keep the UI in sync.
+		}
+		setTimestampFormatState(next)
+	}
+
 	return (
-		<PreferencesContext.Provider value={{ theme, setTheme }}>
+		<PreferencesContext.Provider
+			value={{ theme, setTheme, timestampFormat, setTimestampFormat }}
+		>
 			{children}
 		</PreferencesContext.Provider>
 	)

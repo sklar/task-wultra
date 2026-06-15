@@ -1,5 +1,6 @@
 import { HttpResponse, http } from 'msw'
 import { API_BASE } from '../api/client'
+import { devicesFixture } from './devices.fixture'
 import { statisticsFixture } from './statistics.fixture'
 
 // Default happy-path handlers. Tests override per-scenario with `server.use(...)`
@@ -7,5 +8,8 @@ import { statisticsFixture } from './statistics.fixture'
 export const handlers = [
 	http.get(`${API_BASE}/statistics.json`, () =>
 		HttpResponse.json(statisticsFixture),
+	),
+	http.get(`${API_BASE}/devices/index.json`, () =>
+		HttpResponse.json(devicesFixture),
 	),
 ]

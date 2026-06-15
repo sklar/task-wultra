@@ -27,17 +27,17 @@ into detail. Filtering/search (#04) and sorting/pagination (#05) build on this.
 
 ## Acceptance criteria
 
-- [ ] `devices/index.json` is loaded once (120 rows) into one Query entry; no `page-N`/`users`
+- [x] `devices/index.json` is loaded once (120 rows) into one Query entry; no `page-N`/`users`
       requests are made.
-- [ ] The table shows the identity cell, status badge, platform, and both date columns, in
+- [x] The table shows the identity cell, status badge, platform, and both date columns, in
       `lastActiveAt`-descending order by default.
-- [ ] Timestamps render via the shared util as `<time dateTime>`; `timestampFormat` (default
+- [x] Timestamps render via the shared util as `<time dateTime>`; `timestampFormat` (default
       absolute) lives in the Context; relative mode shows relative text with the absolute value
       in `title`.
-- [ ] Clicking a row navigates to `/devices/$id`.
-- [ ] Loading shows a skeleton; fetch failure shows error + Retry; offline shows the snackbar.
-- [ ] The timestamp util has unit tests for absolute and relative output.
-- [ ] Integration test: success renders rows; one error path.
+- [x] Clicking a row navigates to `/devices/$id`.
+- [x] Loading shows a skeleton; fetch failure shows error + Retry; offline shows the snackbar.
+- [x] The timestamp util has unit tests for absolute and relative output.
+- [x] Integration test: success renders rows; one error path.
 
 ## Blocked by
 

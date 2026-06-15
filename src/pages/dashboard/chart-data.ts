@@ -1,10 +1,6 @@
 import type { ActivationDay, StatCount } from '../../api/statistics'
-
-// The four authoritative Status values, in the order the donut renders them
-// (CONTEXT.md: Status is exactly four-valued — never three). `blocked` is always
-// present, even when the aggregate omits a zero-count status.
-export const STATUS_ORDER = ['active', 'blocked', 'expired', 'removed'] as const
-export type Status = (typeof STATUS_ORDER)[number]
+import type { Status } from '../../domain/status'
+import { STATUS_ORDER } from '../../domain/status'
 
 export type StatusDatum = { status: Status; value: number }
 

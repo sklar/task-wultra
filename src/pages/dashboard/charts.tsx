@@ -8,6 +8,7 @@ import {
 } from '@unovis/react'
 import { Donut, GroupedBar } from '@unovis/ts'
 import type { Statistics } from '../../api/statistics'
+import { STATUS_COLOR } from '../../domain/status-color'
 import { ChartCard } from './ChartCard'
 import type { ActivationDatum, BarDatum, StatusDatum } from './chart-data'
 import {
@@ -18,9 +19,6 @@ import {
 } from './chart-data'
 
 const ACCENT = '#0099ff'
-
-// Status colours, aligned to STATUS_ORDER (active, blocked, expired, removed).
-const STATUS_COLORS = ['#0099ff', '#f5a524', '#8aa0ad', '#f31260']
 
 // One donut arc datum carries its source StatusDatum on `.data`.
 type DonutArc = { data: StatusDatum }
@@ -38,7 +36,7 @@ export function StatusDonut({
 					<VisSingleContainer data={series} height={200}>
 						<VisDonut<StatusDatum>
 							value={(d) => d.value}
-							color={(_d, i) => STATUS_COLORS[i]}
+							color={(d) => STATUS_COLOR[d.status]}
 							arcWidth={40}
 						/>
 						<VisTooltip
@@ -50,12 +48,12 @@ export function StatusDonut({
 					</VisSingleContainer>
 				</div>
 				<ul className="grid gap-1.5 justify-start text-sm">
-					{series.map((datum, i) => (
+					{series.map((datum) => (
 						<li key={datum.status} className="flex items-center gap-2">
 							<span
 								aria-hidden="true"
 								className="inline-block size-3 shrink-0 rounded-sm"
-								style={{ background: STATUS_COLORS[i] }}
+								style={{ background: STATUS_COLOR[datum.status] }}
 							/>
 							<span className="capitalize text-text">{datum.status}</span>
 							<span className="ml-auto tabular-nums text-text-muted">

@@ -16,7 +16,7 @@ export function AppHeader() {
 				aria-label="Wultra Device Dashboard home"
 				className="flex items-center text-text"
 			>
-				<Logo className="h-7 w-auto" />
+				<Logo className="h-6 w-auto" />
 			</Link>
 			<nav className="flex gap-8">
 				{NAV_LINKS.map((link) => (
