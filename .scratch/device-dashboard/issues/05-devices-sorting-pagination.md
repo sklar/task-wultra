@@ -23,14 +23,14 @@ filter → sort → paginate pipeline.
 
 ## Acceptance criteria
 
-- [ ] Sorting toggles on `lastActiveAt` and `createdAt` (asc/desc), with sort + direction in the
+- [x] Sorting toggles on `lastActiveAt` and `createdAt` (asc/desc), with sort + direction in the
       URL; default is `lastActiveAt` descending.
-- [ ] Pagination controls (first/prev/numbered/next/last + "page X of Y") work; the current page
+- [x] Pagination controls (first/prev/numbered/next/last + "page X of Y") work; the current page
       is in the URL.
-- [ ] `pageSize` lives in the Context (default 25) and is respected by the table.
-- [ ] The pipeline composes correctly (a filter + a sort + a page together produce the right
+- [x] `pageSize` lives in the Context (default 25) and is respected by the table.
+- [x] The pipeline composes correctly (a filter + a sort + a page together produce the right
       rows); sort and paginate functions have unit tests.
-- [ ] Integration: changing the sort reorders rows; pagination navigates pages; page size is
+- [x] Integration: changing the sort reorders rows; pagination navigates pages; page size is
       respected.
 
 ## Blocked by

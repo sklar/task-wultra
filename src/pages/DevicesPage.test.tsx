@@ -344,3 +344,140 @@ describe('Devices filtering + search', () => {
 		await waitFor(() => expect(router.state.location.pathname).toBe('/'))
 	})
 })
+
+describe('Devices sorting', () => {
+	const byDates = [
+		device({
+			id: 'id-old-active',
+			shortId: 'd-1',
+			lastActiveAt: '2026-01-01T00:00:00Z',
+			createdAt: '2025-12-01T00:00:00Z',
+		}),
+		device({
+			id: 'id-new-active',
+			shortId: 'd-2',
+			lastActiveAt: '2026-05-01T00:00:00Z',
+			createdAt: '2024-01-01T00:00:00Z',
+		}),
+	]
+
+	function serveByDates() {
+		server.use(
+			http.get(DEVICES_URL, () => HttpResponse.json(collection(byDates))),
+		)
+	}
+
+	function shortIdOrder() {
+		return dataRows().map((row) => within(row).getByText(/^d-/).textContent)
+	}
+
+	it('toggles the createdAt sort and reflects field + direction in the URL', async () => {
+		serveByDates()
+		const { user, router } = await renderWithProviders({
+			initialPath: '/devices',
+		})
+		await screen.findByText('d-1')
+		// Default is lastActiveAt descending: the most-recently-active device leads.
+		expect(shortIdOrder()).toEqual(['d-2', 'd-1'])
+
+		// First click on Created sorts by createdAt descending (newest-created first).
+		await user.click(screen.getByRole('button', { name: /created/i }))
+		await waitFor(() => expect(shortIdOrder()).toEqual(['d-1', 'd-2']))
+		expect(router.state.location.search).toEqual({
+			sort: 'createdAt',
+			dir: 'desc',
+		})
+
+		// Clicking the same column again flips to ascending.
+		await user.click(screen.getByRole('button', { name: /created/i }))
+		await waitFor(() => expect(shortIdOrder()).toEqual(['d-2', 'd-1']))
+		expect(router.state.location.search).toEqual({
+			sort: 'createdAt',
+			dir: 'asc',
+		})
+	})
+
+	it('applies sort from the initial URL', async () => {
+		serveByDates()
+		await renderWithProviders({
+			initialPath: '/devices?sort=createdAt&dir=asc',
+		})
+		await screen.findByText('d-1')
+		// createdAt ascending: oldest-created (d-2, 2024) first.
+		expect(shortIdOrder()).toEqual(['d-2', 'd-1'])
+	})
+
+	it('drops sort + direction from the URL when toggled back to the default', async () => {
+		serveByDates()
+		const { user, router } = await renderWithProviders({
+			initialPath: '/devices',
+		})
+		await screen.findByText('d-1')
+
+		// Away from the default (lastActiveAt asc) writes the explicit state…
+		await user.click(screen.getByRole('button', { name: /last active/i }))
+		await waitFor(() =>
+			expect(router.state.location.search).toEqual({
+				sort: 'lastActiveAt',
+				dir: 'asc',
+			}),
+		)
+
+		// …and toggling back to the default (lastActiveAt desc) clears the params.
+		await user.click(screen.getByRole('button', { name: /last active/i }))
+		await waitFor(() => expect(router.state.location.search).toEqual({}))
+	})
+})
+
+describe('Devices pagination', () => {
+	// 12 devices, lastActiveAt descending d-01 (newest) … d-12 (oldest) so the default
+	// sort gives a predictable order.
+	const many = Array.from({ length: 12 }, (_, i) => {
+		const n = String(i + 1).padStart(2, '0')
+		const month = String(12 - i).padStart(2, '0')
+		return device({
+			id: `id-${n}`,
+			shortId: `d-${n}`,
+			lastActiveAt: `2026-${month}-01T00:00:00Z`,
+		})
+	})
+
+	function serveMany() {
+		server.use(http.get(DEVICES_URL, () => HttpResponse.json(collection(many))))
+	}
+
+	it('respects the page-size preference and navigates pages via the URL', async () => {
+		// Page size is a localStorage preference (default 25); set 10 so 12 devices split.
+		localStorage.setItem('wultra.pageSize', '10')
+		serveMany()
+		const { user, router } = await renderWithProviders({
+			initialPath: '/devices',
+		})
+		await screen.findByText('d-01')
+
+		// Page 1 shows exactly one page-size of rows, with "page X of Y".
+		expect(dataRows()).toHaveLength(10)
+		expect(screen.getByText(/page 1 of 2/i)).toBeInTheDocument()
+
+		await user.click(screen.getByRole('button', { name: 'Next' }))
+
+		// Page 2 holds the remainder; the page is reflected in the URL.
+		await waitFor(() => expect(dataRows()).toHaveLength(2))
+		expect(screen.getByText('d-11')).toBeInTheDocument()
+		expect(router.state.location.search).toEqual({ page: 2 })
+
+		// First returns to page 1 and drops the param (the clean default).
+		await user.click(screen.getByRole('button', { name: 'First' }))
+		await waitFor(() => expect(dataRows()).toHaveLength(10))
+		expect(router.state.location.search).toEqual({})
+	})
+
+	it('opens a page directly from the URL', async () => {
+		localStorage.setItem('wultra.pageSize', '10')
+		serveMany()
+		await renderWithProviders({ initialPath: '/devices?page=2' })
+
+		await waitFor(() => expect(dataRows()).toHaveLength(2))
+		expect(screen.getByText('d-11')).toBeInTheDocument()
+	})
+})

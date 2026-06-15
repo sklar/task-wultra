@@ -14,7 +14,7 @@ export function ThemeToggle() {
 	return (
 		<fieldset
 			aria-label="Theme"
-			className="m-0 flex min-w-0 gap-1 rounded-md border border-border p-0.5"
+			className="m-0 flex min-w-0 gap-1 rounded-sm border border-border p-0.5"
 		>
 			{OPTIONS.map((option) => {
 				const isActive = theme === option.value

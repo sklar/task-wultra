@@ -13,7 +13,7 @@ function DefaultSkeleton() {
 			role="status"
 			aria-busy="true"
 			aria-label="Loading"
-			className="h-24 animate-pulse rounded-md bg-surface-2"
+			className="h-24 animate-pulse rounded-sm bg-surface-2"
 		/>
 	)
 }
@@ -28,14 +28,14 @@ export function AsyncState<T>({
 }: AsyncStateProps<T>) {
 	if (query.isError) {
 		return (
-			<div role="alert" className="rounded-md border border-border p-4">
+			<div role="alert" className="rounded-sm border border-border p-4">
 				<p className="text-text">
 					Something went wrong while loading this data.
 				</p>
 				<button
 					type="button"
 					onClick={() => query.refetch()}
-					className="mt-2 rounded-md bg-accent px-3 py-1 font-medium text-white"
+					className="mt-2 rounded-sm bg-accent px-3 py-1 font-medium text-white"
 				>
 					Retry
 				</button>

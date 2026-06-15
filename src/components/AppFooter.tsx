@@ -5,7 +5,7 @@ const MOCK_API_URL = 'https://wultra.github.io/mtoken-tools/react-demo-api/'
 
 export function AppFooter() {
 	return (
-		<footer className="flex flex-wrap items-center justify-center gap-2 px-4 py-4 text-center text-sm text-text-muted">
+		<footer className="flex flex-wrap items-center justify-center gap-2 px-4 py-4 pt-12 text-center text-sm text-text-muted">
 			<nav aria-label="Footer" className="flex gap-4">
 				<a
 					href={REPOSITORY_URL}

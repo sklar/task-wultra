@@ -11,7 +11,7 @@ export function AppShell() {
 			<HeadContent />
 			<div className="flex min-h-screen flex-col">
 				<AppHeader />
-				<main className="flex-1 px-4 py-6">
+				<main className="mx-auto w-full max-w-300 flex-1 px-4 py-6">
 					<Outlet />
 				</main>
 				<AppFooter />

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Device } from './devices'
-import { filterDevices } from './devices'
+import { filterDevices, paginate, sortDevices } from './devices'
 
 function device(overrides: Partial<Device> = {}): Device {
 	return {
@@ -49,5 +49,106 @@ describe('filterDevices', () => {
 		expect(
 			filterDevices(devices, { search: 'tereza' }).map((d) => d.id),
 		).toEqual(['c'])
+	})
+})
+
+describe('sortDevices', () => {
+	const a = device({ id: 'a', lastActiveAt: '2026-01-01T00:00:00Z' })
+	const b = device({ id: 'b', lastActiveAt: '2026-03-01T00:00:00Z' })
+	const c = device({ id: 'c', lastActiveAt: '2025-06-01T00:00:00Z' })
+
+	it('orders by the chosen date field, descending then ascending', () => {
+		const devices = [a, b, c]
+
+		expect(
+			sortDevices(devices, { field: 'lastActiveAt', direction: 'desc' }).map(
+				(d) => d.id,
+			),
+		).toEqual(['b', 'a', 'c'])
+		expect(
+			sortDevices(devices, { field: 'lastActiveAt', direction: 'asc' }).map(
+				(d) => d.id,
+			),
+		).toEqual(['c', 'a', 'b'])
+	})
+
+	it('sorts by createdAt independently of lastActiveAt', () => {
+		const devices = [
+			device({ id: 'x', createdAt: '2024-01-01T00:00:00Z' }),
+			device({ id: 'y', createdAt: '2025-01-01T00:00:00Z' }),
+		]
+
+		expect(
+			sortDevices(devices, { field: 'createdAt', direction: 'desc' }).map(
+				(d) => d.id,
+			),
+		).toEqual(['y', 'x'])
+	})
+
+	it('does not mutate the input array', () => {
+		const devices = [a, b, c]
+		sortDevices(devices, { field: 'lastActiveAt', direction: 'asc' })
+		expect(devices.map((d) => d.id)).toEqual(['a', 'b', 'c'])
+	})
+})
+
+describe('paginate', () => {
+	const items = Array.from({ length: 12 }, (_, i) => i + 1)
+
+	it('returns the requested page slice and the total page count', () => {
+		expect(paginate(items, 1, 5)).toEqual({
+			items: [1, 2, 3, 4, 5],
+			page: 1,
+			totalPages: 3,
+		})
+		expect(paginate(items, 3, 5).items).toEqual([11, 12])
+	})
+
+	it('clamps an out-of-range page into the valid range', () => {
+		expect(paginate(items, 99, 5).page).toBe(3)
+		expect(paginate(items, 0, 5).page).toBe(1)
+	})
+
+	it('reports a single empty page for an empty collection', () => {
+		expect(paginate([], 1, 25)).toEqual({ items: [], page: 1, totalPages: 1 })
+	})
+})
+
+describe('filter → sort → paginate pipeline', () => {
+	it('composes in order: filter narrows, sort orders, then a page is sliced', () => {
+		const devices = [
+			device({
+				id: 'a',
+				status: 'active',
+				lastActiveAt: '2026-01-01T00:00:00Z',
+			}),
+			device({
+				id: 'b',
+				status: 'blocked',
+				lastActiveAt: '2026-05-01T00:00:00Z',
+			}),
+			device({
+				id: 'c',
+				status: 'active',
+				lastActiveAt: '2026-03-01T00:00:00Z',
+			}),
+			device({
+				id: 'd',
+				status: 'active',
+				lastActiveAt: '2026-02-01T00:00:00Z',
+			}),
+		]
+
+		const filtered = filterDevices(devices, { status: 'active' })
+		const sorted = sortDevices(filtered, {
+			field: 'lastActiveAt',
+			direction: 'desc',
+		})
+		const result = paginate(sorted, 2, 2)
+
+		// blocked 'b' is filtered out; the three active rows sort c, d, a desc; page 2
+		// (size 2) is the remaining row.
+		expect(result.items.map((d) => d.id)).toEqual(['a'])
+		expect(result).toMatchObject({ page: 2, totalPages: 2 })
 	})
 })
