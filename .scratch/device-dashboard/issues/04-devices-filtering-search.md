@@ -23,13 +23,13 @@ shareable and survives refresh/back-forward.
 
 ## Acceptance criteria
 
-- [ ] Status, platform, and vendor filters are single-select scalar URL params, AND-combined.
-- [ ] The search box matches shortId, model, and user displayName (case-insensitive).
-- [ ] Filter and search state is in the URL — shareable, refresh-safe, back/forward works;
+- [x] Status, platform, and vendor filters are single-select scalar URL params, AND-combined.
+- [x] The search box matches shortId, model, and user displayName (case-insensitive).
+- [x] Filter and search state is in the URL — shareable, refresh-safe, back/forward works;
       search updates use `replace`.
-- [ ] An empty "no devices match" state shows when the result set is empty.
-- [ ] The filter/search predicate has unit tests.
-- [ ] Integration: applying a filter narrows the rows; searching narrows the rows; the empty
+- [x] An empty "no devices match" state shows when the result set is empty.
+- [x] The filter/search predicate has unit tests.
+- [x] Integration: applying a filter narrows the rows; searching narrows the rows; the empty
       state appears when nothing matches.
 
 ## Blocked by

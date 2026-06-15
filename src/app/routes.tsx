@@ -1,4 +1,5 @@
 import { createRootRoute, createRoute } from '@tanstack/react-router'
+import { validateDevicesSearch } from '../api/devices'
 import { DashboardPage } from '../pages/DashboardPage'
 import { DeviceDetailPage } from '../pages/DeviceDetailPage'
 import { DevicesPage } from '../pages/DevicesPage'
@@ -24,6 +25,7 @@ const devicesRoute = createRoute({
 	getParentRoute: () => rootRoute,
 	path: '/devices',
 	component: DevicesPage,
+	validateSearch: validateDevicesSearch,
 	head: () => title('Devices'),
 })
 

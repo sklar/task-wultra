@@ -155,7 +155,8 @@ describe('Devices table', () => {
 		})
 
 		// The platform cell carries no link of its own; the whole row is clickable.
-		const platformCell = await screen.findByText('Android')
+		await screen.findByRole('table')
+		const platformCell = within(screen.getByRole('table')).getByText('Android')
 		await user.click(platformCell)
 
 		expect(router.state.location.pathname).toBe('/devices/device-xyz')
@@ -229,5 +230,117 @@ describe('Devices table', () => {
 		await waitFor(() => {
 			expect(screen.queryByText(/you're offline/i)).not.toBeInTheDocument()
 		})
+	})
+})
+
+describe('Devices filtering + search', () => {
+	const mixed = [
+		device({ id: 'id-a', shortId: 'd-a', status: 'active', platform: 'iOS' }),
+		device({
+			id: 'id-b',
+			shortId: 'd-b',
+			status: 'blocked',
+			platform: 'Android',
+			model: 'Galaxy S24',
+		}),
+		device({
+			id: 'id-c',
+			shortId: 'd-c',
+			status: 'active',
+			platform: 'Android',
+			user: { id: 'u-9', displayName: 'Tereza Pospíšil' },
+		}),
+	]
+
+	function serveMixed() {
+		server.use(
+			http.get(DEVICES_URL, () => HttpResponse.json(collection(mixed))),
+		)
+	}
+
+	it('narrows the rows to the chosen status and reflects it in the URL', async () => {
+		serveMixed()
+		const { user, router } = await renderWithProviders({
+			initialPath: '/devices',
+		})
+		await screen.findByText('d-a')
+		expect(dataRows()).toHaveLength(3)
+
+		await user.selectOptions(screen.getByLabelText('Status'), 'blocked')
+
+		await waitFor(() => expect(dataRows()).toHaveLength(1))
+		expect(screen.getByText('d-b')).toBeInTheDocument()
+		expect(router.state.location.search).toEqual({ status: 'blocked' })
+	})
+
+	it('narrows the rows to those matching the search text', async () => {
+		serveMixed()
+		const { user } = await renderWithProviders({ initialPath: '/devices' })
+		await screen.findByText('d-a')
+
+		await user.type(screen.getByLabelText('Search'), 'galaxy')
+
+		await waitFor(() => expect(dataRows()).toHaveLength(1))
+		expect(screen.getByText('d-b')).toBeInTheDocument()
+	})
+
+	it('shows the empty state when filters/search exclude every device', async () => {
+		serveMixed()
+		const { user } = await renderWithProviders({ initialPath: '/devices' })
+		await screen.findByText('d-a')
+
+		await user.type(screen.getByLabelText('Search'), 'no-such-device')
+
+		expect(await screen.findByText(/no devices match/i)).toBeInTheDocument()
+		expect(screen.queryByRole('table')).not.toBeInTheDocument()
+	})
+
+	it('applies filter + search from the initial URL (shareable / refresh-safe)', async () => {
+		serveMixed()
+		await renderWithProviders({
+			initialPath: '/devices?status=active&platform=Android',
+		})
+
+		await waitFor(() => expect(dataRows()).toHaveLength(1))
+		expect(screen.getByText('d-c')).toBeInTheDocument()
+		// The controls pre-fill from the URL, so a shared link is self-describing.
+		expect(screen.getByLabelText('Status')).toHaveValue('active')
+		expect(screen.getByLabelText('Platform')).toHaveValue('Android')
+	})
+
+	it('offers Clear filters only when something is active, and resets everything', async () => {
+		serveMixed()
+		const { user, router } = await renderWithProviders({
+			initialPath: '/devices',
+		})
+		await screen.findByText('d-a')
+		// Nothing applied yet — no reset affordance.
+		expect(
+			screen.queryByRole('button', { name: /clear filters/i }),
+		).not.toBeInTheDocument()
+
+		await user.selectOptions(screen.getByLabelText('Status'), 'blocked')
+		await waitFor(() => expect(dataRows()).toHaveLength(1))
+
+		await user.click(screen.getByRole('button', { name: /clear filters/i }))
+
+		await waitFor(() => expect(dataRows()).toHaveLength(3))
+		expect(router.state.location.search).toEqual({})
+	})
+
+	it('replaces history while searching, so one Back leaves the search behind', async () => {
+		serveMixed()
+		const { user, router } = await renderWithProviders({ initialPath: '/' })
+		// Push Dashboard → Devices, then type several characters into search.
+		await user.click(screen.getByRole('link', { name: 'Devices' }))
+		await screen.findByText('d-a')
+		await user.type(screen.getByLabelText('Search'), 'galaxy')
+		await waitFor(() =>
+			expect(router.state.location.search).toEqual({ search: 'galaxy' }),
+		)
+
+		// Each keystroke replaced rather than pushed, so a single Back is the Dashboard.
+		router.history.back()
+		await waitFor(() => expect(router.state.location.pathname).toBe('/'))
 	})
 })
