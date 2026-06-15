@@ -38,20 +38,20 @@ even though the pages themselves are still placeholders.
 
 ## Acceptance criteria
 
-- [ ] All four routes are reachable via the header nav, with active-route highlighting; only the
+- [x] All four routes are reachable via the header nav, with active-route highlighting; only the
       main region changes between routes.
-- [ ] Tailwind v4 is configured; tokens exist as CSS variables (`--accent: #09f` constant; dark
+- [x] Tailwind v4 is configured; tokens exist as CSS variables (`--accent: #09f` constant; dark
       and light surface/text tokens); dark is the default.
-- [ ] Theme can be set to dark / light / system through the Context and persists across reloads;
+- [x] Theme can be set to dark / light / system through the Context and persists across reloads;
       `system` follows the OS and updates live; the header toggle works.
-- [ ] A `QueryClient` is provided; MSW intercepts requests in dev and in tests;
+- [x] A `QueryClient` is provided; MSW intercepts requests in dev and in tests;
       `renderWithProviders` and a per-test `QueryClient` (`retry: false`) helper exist.
-- [ ] The AsyncState wrapper shows skeleton → error + Retry → content against a sample query.
-- [ ] The offline snackbar appears when offline and clears on reconnect, without reflowing
+- [x] The AsyncState wrapper shows skeleton → error + Retry → content against a sample query.
+- [x] The offline snackbar appears when offline and clears on reconnect, without reflowing
       layout; loaded content is retained.
-- [ ] Each route sets its document title via the router `head` API.
-- [ ] Footer shows app version + GitHub link + Wultra mock API link.
-- [ ] Smoke tests: nav changes route; theme toggle persists; AsyncState shows error + Retry;
+- [x] Each route sets its document title via the router `head` API.
+- [x] Footer shows app version + GitHub link + Wultra mock API link.
+- [x] Smoke tests: nav changes route; theme toggle persists; AsyncState shows error + Retry;
       offline snackbar appears when offline.
 
 ## Blocked by
