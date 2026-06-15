@@ -4,8 +4,6 @@ A small dashboard SPA visualising devices paired against a mock authentication b
 3–4 pages of tables and charts over real network calls, loading/error/offline states, and a
 persisted user preference. See the brief in [ASSIGNMENT.md](ASSIGNMENT.md).
 
-> **Status:** early scaffold. Stack and architecture are locked (below); feature work is in progress.
-
 - [Tech stack](docs/TECH_STACK.md) — locked decisions
 - [Justification](JUSTIFICATION.md) — the *why*, alternatives considered, and tradeoffs accepted
 
@@ -18,7 +16,7 @@ persisted user preference. See the brief in [ASSIGNMENT.md](ASSIGNMENT.md).
 - [Tailwind CSS v4](https://tailwindcss.com/) + CSS variables — dark theme, `#09f` accent
 - [UnoVis](https://unovis.dev/) — charts (donut, bars, daily activation bar)
 - [Biome](https://biomejs.dev/) — lint + format (replaces ESLint + Prettier)
-- [Vitest](https://vitest.dev/) + Testing Library + [MSW](https://mswjs.io/) v2 — *(planned)* tests & network mocking
+- [Vitest](https://vitest.dev/) + Testing Library + [MSW](https://mswjs.io/) v2 — tests & network mocking
 
 ## 🚀 How to run locally
 
@@ -40,6 +38,9 @@ pnpm dev           # dev server at http://localhost:5173
 | `pnpm preview` | Preview the production build |
 | `pnpm lint:check` | Check with Biome |
 | `pnpm lint:write` | Fix with Biome |
+| `pnpm test` | Run tests in watch mode (Vitest) |
+| `pnpm test:run` | Run tests once |
+| `pnpm typecheck` | Typecheck without emitting |
 
 ## 🔌 Data source
 
@@ -56,5 +57,5 @@ Decisions favour a small codebase with explicit boundaries: no state-management 
 Context cover it), hand-rolled tables to avoid heavy dependencies, and Biome as a single
 lint+format tool. Full reasoning in [JUSTIFICATION.md](JUSTIFICATION.md).
 
-**With more time:** wire up the Vitest + MSW test suite (loading/error/offline paths, chart data
-as pure functions) and add a single Playwright happy-path smoke test (currently out of scope).
+**With more time:** add a single Playwright happy-path smoke test — the one gap the Vitest + MSW
+suite can't cover (jsdom isn't a real browser), currently out of scope.

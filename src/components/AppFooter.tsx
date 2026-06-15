@@ -1,6 +1,6 @@
 // Repository link is a placeholder until the real repo URL is supplied (like the
 // logo asset); the mock API link is the live Wultra data source.
-const REPOSITORY_URL = 'https://github.com/wultra/mtoken-tools'
+const REPOSITORY_URL = 'https://github.com/sklar/task-wultra'
 const MOCK_API_URL = 'https://wultra.github.io/mtoken-tools/react-demo-api/'
 
 export function AppFooter() {
