@@ -1,0 +1,12 @@
+[build]
+  command = "pnpm build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "24.16.0"
+
+# SPA fallback: let the client-side router handle deep links.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

@@ -10,6 +10,9 @@
 dist
 server
 
+# CI
+.netlify
+
 # compilation
 *.tsbuildinfo
 
