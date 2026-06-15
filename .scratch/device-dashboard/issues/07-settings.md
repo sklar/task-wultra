@@ -22,11 +22,11 @@ controls.
 
 ## Acceptance criteria
 
-- [ ] The page shows three controls bound to the Context: theme, page size, timestamp format.
-- [ ] Each control applies on change with no Save button; the value persists to localStorage.
-- [ ] Changing a pref reflects live in its consumers (theme across the app incl. the header
+- [x] The page shows three controls bound to the Context: theme, page size, timestamp format.
+- [x] Each control applies on change with no Save button; the value persists to localStorage.
+- [x] Changing a pref reflects live in its consumers (theme across the app incl. the header
       toggle; page size in the devices table; timestamp format in every `<time>`).
-- [ ] Integration: changing each preference updates localStorage and a visible consumer.
+- [x] Integration: changing each preference updates localStorage and a visible consumer.
 
 ## Blocked by
 
