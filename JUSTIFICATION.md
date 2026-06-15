@@ -111,9 +111,7 @@ strongest visual encoding (length/position) and lets each day be read exactly.
 
 **Passed on:** **Recharts** was the safe pick — bigger ecosystem, SVG, reviewers know it — but
 UnoVis's theming fit and TS-first design edged it out (**tradeoff:** smaller community).
-**Chart.js** is canvas-based (can't inspect/test/CSS-style it). **Victory** is heavier and
-sleepier. **Observable Plot / Frappe / Chartist** are imperative-in-React (mount via
-`useEffect` — extra seam). **Taucharts** is for exploratory BI, wrong tool.
+**Chart.js** is canvas-based (can't inspect/test/CSS-style it).
 
 ## Tables: hand-rolled
 

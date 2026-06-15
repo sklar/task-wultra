@@ -30,6 +30,18 @@
 	color-scheme: light;
 }
 
+/* UnoVis axis theming. UnoVis only swaps to its own dark palette under a
+   `body.theme-dark` ancestor, which this app never sets (we theme via the
+   `.dark`/`.light` class on <html>). So point its axis variables at our own
+   tokens — which already flip per theme — and the chart axes follow along. */
+:root {
+	--vis-axis-domain-color: var(--border);
+	--vis-axis-grid-color: var(--border);
+	--vis-axis-label-color: var(--text-muted);
+	--vis-axis-tick-color: var(--border);
+	--vis-axis-tick-label-color: hsl(from var(--text) h s l / 60%);
+}
+
 /* Expose the runtime CSS variables as Tailwind theme colors. `inline` keeps the
    utilities referencing the variables, so they react to the .light/.dark flip. */
 @theme inline {
@@ -46,4 +58,38 @@
 body {
 	background: var(--surface);
 	color: var(--text);
+}
+
+/* Dashboard layout. Mobile = single-column source order (KPIs → status → platform →
+   event type → activations). Desktop reflows via grid-template-areas — never the
+   `order` property, which would leave tab/SR focus behind (PAGES.md). */
+.dashboard-grid {
+	display: grid;
+	gap: --spacing(4);
+}
+
+@media (min-width: 880px) {
+	.dashboard-grid {
+		grid-template-columns: 1fr 1fr;
+		grid-template-areas:
+			"status kpis"
+			"platform events"
+			"activations activations";
+	}
+
+	.area-kpis {
+		grid-area: kpis;
+	}
+	.area-status {
+		grid-area: status;
+	}
+	.area-platform {
+		grid-area: platform;
+	}
+	.area-events {
+		grid-area: events;
+	}
+	.area-activations {
+		grid-area: activations;
+	}
 }

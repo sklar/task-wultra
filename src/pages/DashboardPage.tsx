@@ -1,22 +1,38 @@
 import { useQuery } from '@tanstack/react-query'
-import { sampleQueryOptions } from '../api/sample'
+import { statisticsQueryOptions } from '../api/statistics'
 import { AsyncState } from '../components/AsyncState'
+import {
+	ActivationsBar,
+	EventTypeBar,
+	PlatformBar,
+	StatusDonut,
+} from './dashboard/charts'
+import { Freshness } from './dashboard/Freshness'
+import { KpiCards } from './dashboard/KpiCards'
 
-// Placeholder body. The sample query exercises the data layer end-to-end
-// (skeleton → error + Retry → content); real KPIs and charts land in a later slice.
+// Dashboard (`/`): fleet health and composition from the single statistics.json
+// aggregate. Source (DOM) order is the mobile/SR reading order — KPIs → status →
+// platform → event type → activations; the desktop grid reflows via grid-template-
+// areas in index.css (never the `order` property). See PAGES.md.
 export function DashboardPage() {
-	const query = useQuery(sampleQueryOptions)
+	const query = useQuery(statisticsQueryOptions)
 	return (
-		<section className="flex flex-col gap-4">
+		<section className="flex flex-col gap-6">
 			<h1 className="text-2xl font-semibold text-text">Dashboard</h1>
-			<p className="text-text-muted">
-				Placeholder — KPIs and charts land in a later slice.
-			</p>
 			<AsyncState query={query}>
-				{(data) => (
-					<p className="text-text">
-						Data layer check: fetched {data.totals.devices} devices.
-					</p>
+				{(stats) => (
+					<div className="flex flex-col gap-4">
+						<div className="dashboard-grid">
+							<KpiCards totals={stats.totals} />
+							<StatusDonut byStatus={stats.byStatus} />
+							<PlatformBar byPlatform={stats.byPlatform} />
+							<EventTypeBar byEventType={stats.byEventType} />
+							<ActivationsBar
+								activationsLast30Days={stats.activationsLast30Days}
+							/>
+						</div>
+						<Freshness generatedAt={stats.generatedAt} />
+					</div>
 				)}
 			</AsyncState>
 		</section>

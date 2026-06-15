@@ -27,17 +27,17 @@ by country and is not used here.
 
 ## Acceptance criteria
 
-- [ ] `statistics.json` is fetched via Query; loading shows a skeleton; failure shows error +
+- [x] `statistics.json` is fetched via Query; loading shows a skeleton; failure shows error +
       Retry; offline shows the snackbar with any cached content retained.
-- [ ] Four KPI cards display `totals.devices`, `totals.activeDevices`, `totals.users`,
+- [x] Four KPI cards display `totals.devices`, `totals.activeDevices`, `totals.users`,
       `totals.events`.
-- [ ] Donut renders the four statuses; platform and event-type horizontal bars render; the daily
+- [x] Donut renders the four statuses; platform and event-type horizontal bars render; the daily
       activations vertical bar renders one column per day.
-- [ ] "Statistics as of {generatedAt}" appears near the charts.
-- [ ] Chart-shaping logic is in pure functions with unit tests covering edge cases (empty input,
+- [x] "Statistics as of {generatedAt}" appears near the charts.
+- [x] Chart-shaping logic is in pure functions with unit tests covering edge cases (empty input,
       the sparse activations series, the four status values including `blocked`).
-- [ ] Source order and desktop grid match PAGES.md.
-- [ ] Integration tests: success renders KPI values + chart containers/labels; one error path.
+- [x] Source order and desktop grid match PAGES.md.
+- [x] Integration tests: success renders KPI values + chart containers/labels; one error path.
 
 ## Blocked by
 
